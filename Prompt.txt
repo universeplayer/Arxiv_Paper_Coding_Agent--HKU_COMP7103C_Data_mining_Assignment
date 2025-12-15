@@ -1,0 +1,187 @@
+﻿"# arXiv CS Daily · Front-End Only (Strict)
+
+你是一名**只负责编写前端**的工程师，需要**独立交付**一个名为「arXiv CS Daily」的**纯静态网站**。
+
+最终产物 **必须且只能包含** 以下 4 个文件，并全部放在同一目录中：
+- `README.md`
+- `index.html`
+- `styles.css`
+- `main.js`
+
+直接用浏览器打开 `index.html` 即可运行。
+
+---
+
+## 🚨 全局硬约束（不可违反）
+
+- **纯前端**：只允许 HTML / CSS / 原生 JavaScript  
+- **禁止** 后端、Jinja、Node、框架、构建工具、外部 CDN  
+- **网络允许时，必须能成功拉取并展示真实 arXiv CS 论文**
+- UI 必须**严格遵循我给定 CSS 的整体风格与设计气质**，不允许重新设计或引入另一套视觉体系
+- **严禁滥竽充数或复制内容**
+
+---
+
+## 🛑 反复制 / 反糊弄规则（强制）
+
+- 四个文件内容 **必须彼此不同**  
+- 任意两个文件 **前 30 行若高度相同或明显相似，视为失败**
+- 不允许将同一段代码复制到多个文件中
+
+**文件语域必须严格区分：**
+
+- `README.md`  
+  - 只能是自然语言说明（Markdown）
+  - **不得出现** `< > { } ; () function const =>` 等任何代码特征
+- `index.html`  
+  - 必须以 `<!DOCTYPE html>` 开头  
+  - 只包含 HTML 结构
+- `styles.css`  
+  - 只包含 CSS  
+  - **不得出现** `<html>`、`<div>` 等 HTML 标签
+- `main.js`  
+  - 只包含 JavaScript  
+  - 必须使用 **IIFE（自执行函数）** 包裹，并以 `})();` 结尾  
+  - **不得输出 HTML/CSS 文本片段**
+
+---
+
+## 📁 文件职责（强制）
+
+- `index.html`
+  - 只写 HTML
+  - 必须 `<link rel="stylesheet" href="styles.css">`
+  - 必须在 `<body>` 底部 `<script src="main.js"></script>`
+  - 禁止内联或粘贴 CSS / JS
+
+- `styles.css`
+  - 只写 CSS
+  - 覆盖页面全部样式
+
+- `main.js`
+  - 只写 JavaScript
+  - 负责：状态管理、数据获取、渲染、事件、路由
+  - 必须注册 `DOMContentLoaded` 入口并实际执行初始化流程
+
+---
+
+## 🎯 功能目标（必须实现）
+
+### 1. 论文列表（首页）
+
+- 展示 arXiv Computer Science 最新论文
+- 固定分类：
+  - `cs.AI`, `cs.CL`, `cs.CV`, `cs.LG`
+- 顶部分类筛选：
+  - `All`, `cs.AI`, `cs.CL`, `cs.CV`, `cs.LG`
+  - 点击后立即过滤列表
+  - 激活态明显
+  - 从详情页返回时保持上一次筛选状态
+
+### 2. 详情页（SPA + hash 路由）
+
+- 使用 `window.location.hash`
+- 路由规则：
+  - 列表页：空 hash / `#home` / `#cat/<code>`
+  - 详情页：`#paper/<arxivId>`
+- 详情页必须显示：
+  - 标题
+  - 作者列表
+  - 完整摘要
+  - 主分类
+  - 提交时间
+  - **Open PDF 按钮**
+
+**Open PDF 规则（必须）：**
+- 始终使用论文对象中的 `pdfUrl`
+- 新标签页打开
+- 不允许拼接当前页面 URL 或 hash
+
+---
+
+## 🌐 数据获取与解析（必须稳定）
+
+### 数据源
+- 使用 arXiv 官方 Atom API（CS 分类，50 篇，按 submittedDate 倒序）
+
+### 请求顺序（严格）
+
+按顺序尝试以下 3 个 endpoint（任一成功即停止，每一步必须有超时控制）：
+1. `https://cors.isomorphic-git.org/<原始 arXiv URL>`
+2. `https://api.allorigins.win/raw?url=<URL 编码后的原始 URL>`
+3. 直接请求 arXiv 官方 API（HTTPS）
+
+### 失败处理
+- 若全部失败：
+  - 页面显示错误状态
+  - 保持 UI 结构
+  - 不渲染示例论文
+  - 在控制台输出 `console.warn`
+
+### Atom 解析
+使用浏览器 XML 解析器，对每个 `<entry>` 提取：
+- `arxivId`
+- `title`
+- `summary`
+- `authors`（数组）
+- `primaryCategory`
+- `published`
+- `pdfUrl`（优先 API 提供，否则标准 arXiv PDF URL）
+
+单条解析失败不得导致整体崩溃。
+
+---
+
+## 🧠 前端状态与逻辑（必须实现并调用）
+
+### 状态
+- `papers`
+- `filteredPapers`
+- `activeCategory`
+- `searchQuery`
+- `currentView`
+
+### 交互
+- 分类点击 → 更新 hash → 重新渲染
+- 搜索框 → 实时过滤（标题 / 作者 / 摘要）
+- 卡片点击 → 进入详情页
+- 监听 `hashchange` 处理路由切换
+
+---
+
+## 🎨 UI 风格（只描述气质，不写数值）
+
+- **深色、理性、科幻感学术风格**
+- 高对比、克制、不花哨
+- 深色背景 + 深色卡片
+- 内容为主，不追求炫技动画
+- 分类 pill 与按钮为蓝色系强调色
+- 列表紧凑但不拥挤，详情页更宽松易读
+
+不得引入新的配色体系或设计语言。
+
+---
+
+## 📤 输出方式（严格）
+
+最终回答 **必须只输出** 以下 4 个内容块，顺序固定：
+
+1. `README.md`
+2. `index.html`
+3. `styles.css`
+4. `main.js`
+
+每个内容块 **只包含该文件的真实内容**，不得混入其他文件文本。
+
+---
+
+## ✅ 验收规则（硬性）
+
+以下任一情况视为失败，必须在同一轮输出中自动修复：
+- 文件缺失或命名错误
+- main.js 未被正确引用
+- 复制同一内容充当多个文件
+- hash 路由 / 分类过滤 / 详情页 / Open PDF 任一不可用
+- 真实 arXiv 数据无法加载但未显示错误状态
+- UI 明显偏离深色学术风格
+"

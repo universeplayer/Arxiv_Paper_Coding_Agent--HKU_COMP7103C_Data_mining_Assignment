@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>arXiv Daily - {{ date }}</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- Three.js Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">arXiv Daily</h1>
+                <p class="subtitle">{{ date }} - Latest Research Papers</p>
+                <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Controls -->
+        <section class="controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search papers by title, author, or keywords..." />
+                <button id="search-btn">🔍</button>
+            </div>
+
+            <div class="filters">
+                <div class="filter-group">
+                    <label for="category-filter">Category:</label>
+                    <select id="category-filter">
+                        <option value="all">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="difficulty-filter">Difficulty:</label>
+                    <select id="difficulty-filter">
+                        <option value="all">All Levels</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                    </select>
+                </div>
+
+                <button id="reset-filters" class="reset-btn">Reset</button>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="stats">
+            <div class="stat-card">
+                <div class="stat-value">{{ total_papers }}</div>
+                <div class="stat-label">Total Papers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ categories|length }}</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="filtered-count">{{ total_papers }}</div>
+                <div class="stat-label">Showing</div>
+            </div>
+        </section>
+
+        <!-- Papers Grid -->
+        <section class="papers-grid" id="papers-grid">
+            {% for paper in papers %}
+            <article class="paper-card"
+                     data-category="{{ paper.primary_category }}"
+                     data-difficulty="{{ paper.difficulty }}"
+                     data-title="{{ paper.title|lower }}"
+                     data-authors="{{ paper.authors|join(' ')|lower }}"
+                     data-abstract="{{ paper.abstract|lower }}">
+                <div class="paper-header">
+                    <span class="paper-category">{{ paper.primary_category }}</span>
+                    <span class="paper-difficulty difficulty-{{ paper.difficulty }}">
+                        {{ paper.difficulty }}
+                    </span>
+                </div>
+
+                <h3 class="paper-title">{{ paper.title }}</h3>
+
+                <div class="paper-authors">
+                    {% for author in paper.authors[:3] %}
+                        <span class="author">{{ author }}</span>
+                    {% endfor %}
+                    {% if paper.authors|length > 3 %}
+                        <span class="author-more">+{{ paper.authors|length - 3 }} more</span>
+                    {% endif %}
+                </div>
+
+                <p class="paper-abstract">{{ paper.abstract[:250] }}...</p>
+
+                <div class="paper-meta">
+                    <span class="paper-date">{{ paper.published_date }}</span>
+                    <span class="paper-id">{{ paper.short_id }}</span>
+                </div>
+
+                <div class="paper-actions">
+                    <a href="{{ paper.pdf_url }}" class="btn btn-primary" target="_blank" rel="noopener">
+                        PDF
+                    </a>
+                    <a href="{{ paper.arxiv_url }}" class="btn btn-secondary" target="_blank" rel="noopener">
+                        arXiv
+                    </a>
+                    <button class="btn btn-tertiary" onclick="showDetails('{{ paper.id }}')">
+                        Details
+                    </button>
+                </div>
+            </article>
+            {% endfor %}
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Generated with Advanced Agent System | Data from arXiv.org</p>
+            <p>arXiv is a trademark of Cornell University</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Paper Details -->
+    <div id="paper-modal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

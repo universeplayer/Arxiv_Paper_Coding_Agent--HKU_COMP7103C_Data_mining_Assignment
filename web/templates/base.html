@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title or "arXiv CS Daily" }}</title>
+    <link rel="stylesheet" href="{{ static_path or 'static/styles.css' }}" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <h1>arXiv CS Daily</h1>
+        <p>最新的计算机科学论文快照 · 生成时间 {{ metadata.generated_at }}</p>
+      </div>
+      <nav>
+        {% for category in categories %}
+        <a href="#{{ category | replace('.', '-') }}">{{ category }}</a>
+        {% endfor %}
+      </nav>
+    </header>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+    <footer>
+      <p>数据来源: arXiv API ｜ 站点自动生成，可离线托管。</p>
+    </footer>
+  </body>
+</html>
+

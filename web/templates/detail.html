@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="paper-detail">
+  <div class="paper-meta">
+    <span class="tag">{{ paper.primary_category }}</span>
+    <span class="date">{{ paper.published.strftime("%Y-%m-%d %H:%M") }}</span>
+  </div>
+  <h2>{{ paper.title }}</h2>
+  <p class="authors">{{ ", ".join(paper.authors) }}</p>
+  <p class="summary">{{ paper.summary }}</p>
+  <div class="cta">
+    <a class="btn" href="{{ paper.pdf_url }}" target="_blank" rel="noopener">打开 PDF</a>
+    <button class="btn" onclick="copyCitation()">复制引用</button>
+  </div>
+  <section>
+    <h3>BibTeX</h3>
+    <pre id="bibtex">@misc{ {{ paper.identifier.split('/')[-1] }},
+  title={ {{ paper.title }} },
+  author={ {{ ', '.join(paper.authors) }} },
+  year={ {{ paper.published.year }} },
+  eprint={ {{ paper.identifier.split('/')[-1] }} },
+  archivePrefix={ arXiv },
+  primaryClass={ {{ paper.primary_category }} }
+}</pre>
+  </section>
+  <section>
+    <h3>标准引用</h3>
+    <pre id="citation">{{ paper.authors | join(', ') }}. "{{ paper.title }}." arXiv preprint {{ paper.identifier }} ({{ paper.published.year }}).</pre>
+  </section>
+</article>
+<script>
+  function copyCitation() {
+    const bib = document.getElementById("bibtex").innerText;
+    const cite = document.getElementById("citation").innerText;
+    navigator.clipboard.writeText(bib + "\n\n" + cite);
+    alert("引用内容已复制！");
+  }
+</script>
+{% endblock %}
+

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="paper-grid">
+  {% for paper in papers %}
+  <article id="{{ paper.primary_category | replace('.', '-') }}">
+    <div class="paper-meta">
+      <span class="tag">{{ paper.primary_category }}</span>
+      <span class="date">{{ paper.published.strftime("%Y-%m-%d %H:%M") }}</span>
+    </div>
+    <h2>
+      <a href="paper_detail/{{ paper.identifier.split('/')[-1] }}.html">{{ paper.title }}</a>
+    </h2>
+    <p class="authors">{{ ", ".join(paper.authors) }}</p>
+    <p class="summary">
+      {{ paper.summary[:240] }}{% if paper.summary|length > 240 %}...{% endif %}
+    </p>
+  </article>
+  {% endfor %}
+</section>
+{% endblock %}
+
