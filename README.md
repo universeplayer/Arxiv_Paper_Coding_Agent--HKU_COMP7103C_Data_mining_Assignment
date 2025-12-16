@@ -8,7 +8,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-*Developed by Yufeng HE for advanced AI agent research*
+*Developed by Yufeng HE and collaborators for advanced AI agent research*
 
 </div>
 
