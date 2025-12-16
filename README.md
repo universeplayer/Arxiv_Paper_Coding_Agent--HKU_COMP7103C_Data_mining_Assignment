@@ -195,7 +195,6 @@ def execute(task):
 
 **Yufeng HE**
 - Research Focus: Trustworthy AI, Multi-Agent Systems
-- Project: Advanced Agent System for Code Generation
 
 ---
 
