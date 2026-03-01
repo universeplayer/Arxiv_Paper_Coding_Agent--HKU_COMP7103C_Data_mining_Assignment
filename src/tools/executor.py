@@ -92,7 +92,7 @@ def execute_python(
             "status": "timeout",
             "error": f"Execution timed out after {timeout} seconds"
         }
-    except Exception as e:
+    except (OSError, subprocess.SubprocessError) as e:
         console.print(f"[red]Error executing Python code: {e}[/red]")
         return {
             "status": "error",
@@ -175,7 +175,7 @@ def execute_shell(
             "error": f"Command timed out after {timeout} seconds",
             "command": command
         }
-    except Exception as e:
+    except (OSError, subprocess.SubprocessError) as e:
         console.print(f"[red]Error executing command: {e}[/red]")
         return {
             "status": "error",
@@ -251,7 +251,7 @@ def execute_script(
             "error": f"Script timed out after {timeout} seconds",
             "script": filepath
         }
-    except Exception as e:
+    except (OSError, subprocess.SubprocessError) as e:
         console.print(f"[red]Error executing script: {e}[/red]")
         return {
             "status": "error",
