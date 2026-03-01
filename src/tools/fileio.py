@@ -40,7 +40,9 @@ def _safe_path(path: str, base_dir: Optional[str] = None) -> Path:
                 )
 
         return resolved_path
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except (OSError, ValueError) as e:
         raise FileOperationError(f"Invalid path {path}: {e}")
 
 
@@ -79,7 +81,9 @@ def create_file(
         console.print(f"[green]Created file: {filepath}[/green]")
         return {"status": "success", "path": str(path), "message": "File created"}
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error creating file {filepath}: {e}[/red]")
         raise FileOperationError(f"Failed to create file: {e}")
 
@@ -110,7 +114,9 @@ def read_file(filepath: str, base_dir: Optional[str] = None) -> str:
         console.print(f"[blue]Read file: {filepath} ({len(content)} chars)[/blue]")
         return content
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error reading file {filepath}: {e}[/red]")
         raise FileOperationError(f"Failed to read file: {e}")
 
@@ -152,7 +158,9 @@ def write_file(
         console.print(f"[green]{action} file: {filepath}[/green]")
         return {"status": "success", "path": str(path), "message": f"{action} file"}
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error writing file {filepath}: {e}[/red]")
         raise FileOperationError(f"Failed to write file: {e}")
 
@@ -183,7 +191,9 @@ def delete_file(filepath: str, base_dir: Optional[str] = None) -> Dict[str, Any]
         else:
             raise FileOperationError(f"{filepath} is not a file")
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error deleting file {filepath}: {e}[/red]")
         raise FileOperationError(f"Failed to delete file: {e}")
 
@@ -225,7 +235,9 @@ def list_directory(
         console.print(f"[blue]Listed {len(files)} files in {dirpath}[/blue]")
         return sorted(files)
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error listing directory {dirpath}: {e}[/red]")
         raise FileOperationError(f"Failed to list directory: {e}")
 
@@ -261,7 +273,9 @@ def create_directory(
         console.print(f"[green]Created directory: {dirpath}[/green]")
         return {"status": "success", "path": str(path), "message": "Directory created"}
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error creating directory {dirpath}: {e}[/red]")
         raise FileOperationError(f"Failed to create directory: {e}")
 
@@ -297,6 +311,8 @@ def copy_file(
         console.print(f"[green]Copied {src} to {dst}[/green]")
         return {"status": "success", "src": str(src_path), "dst": str(dst_path)}
 
-    except Exception as e:
+    except FileOperationError:
+        raise
+    except OSError as e:
         console.print(f"[red]Error copying file: {e}[/red]")
         raise FileOperationError(f"Failed to copy file: {e}")

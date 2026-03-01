@@ -105,8 +105,8 @@ def fetch_url(
     except requests.RequestException as e:
         console.print(f"[red]Error fetching {url}: {e}[/red]")
         return {"status": "error", "error": str(e), "url": url}
-    except Exception as e:
-        console.print(f"[red]Unexpected error fetching {url}: {e}[/red]")
+    except (ValueError, AttributeError) as e:
+        console.print(f"[red]Error parsing content from {url}: {e}[/red]")
         return {"status": "error", "error": str(e), "url": url}
 
 
@@ -145,7 +145,7 @@ def download_file(
             "url": url
         }
 
-    except Exception as e:
+    except (requests.RequestException, OSError) as e:
         console.print(f"[red]Error downloading {url}: {e}[/red]")
         return {"status": "error", "error": str(e), "url": url}
 
@@ -177,6 +177,6 @@ def extract_links(html: str, base_url: Optional[str] = None) -> List[str]:
         console.print(f"[blue]Extracted {len(links)} links[/blue]")
         return links
 
-    except Exception as e:
+    except (ValueError, AttributeError) as e:
         console.print(f"[red]Error extracting links: {e}[/red]")
         return []
